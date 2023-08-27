@@ -9,17 +9,22 @@ class Channel:
 
     def __init__(self, channel_id: str) -> None:
         """Экземпляр инициализируется id канала. Дальше все данные будут подтягиваться по API."""
-        self.channel_id = channel_id
+        self._channel_id = channel_id
         youtube = build('youtube', 'v3', developerKey=Channel.YOUTUBE_API_KEY)
         channel_info = youtube.channels().list(id=self.channel_id, part='snippet,statistics')
         self.response = channel_info.execute()
         self.id = self.response['items'][0]['id']
         self.title = self.response['items'][0]['snippet']['title']
         self.description = self.response['items'][0]['snippet']['description']
-        self.url = self.response['items'][0]['snippet']['customUrl']
+        # self.url = self.response['items'][0]['snippet']['customUrl']
+        self.url = 'https://www.youtube.com/channel/' + channel_id
         self.subscriber_count = self.response['items'][0]['statistics']['subscriberCount']
         self.video_count = self.response['items'][0]['statistics']['videoCount']
         self.view_count = self.response['items'][0]['statistics']['viewCount']
+
+    @property
+    def channel_id(self):
+        return self._channel_id
 
     def print_info(self) -> str:
         """Выводит в консоль информацию о канале."""
@@ -30,10 +35,10 @@ class Channel:
 
     @classmethod
     def get_service(cls):
-        pass
+        return build('youtube', 'v3', developerKey=Channel.YOUTUBE_API_KEY)
 
     def to_json(self, file_name):
-        data = {}
+        data = {self.channel_id: []}
         data[self.channel_id].append({
             'channel_id': self.id,
             'channel_tittle': self.title,
@@ -44,4 +49,4 @@ class Channel:
             'channel_view_count': self.view_count
         })
         with open(file_name, 'w', encoding='utf-8') as file:
-            json.dump(data, file)
+            json.dump(data, file, indent=2, ensure_ascii=False)

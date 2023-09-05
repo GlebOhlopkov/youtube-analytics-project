@@ -37,17 +37,8 @@ class Video():
 
 
 class PLVideo(Video):
+    """Класс для видео, у которого есть плейлист"""
 
-    def __init__(self, video_id, playlist_id):
+    def __init__(self, video_id: str, playlist_id: str) -> None:
         super().__init__(video_id)
-        playlist = self.get_service()
-        playlist_videos = playlist.playlistItems().list(playlistId=playlist_id,
-                                                       part='contentDetails',
-                                                       maxResults=50,
-                                                       ).execute()
-        self.id_video = playlist_videos['items'][0]['id']
-        self.title = playlist_videos['items'][0]['snippet']['title']
-        self.url = 'https://www.youtu.be/' + video_id
-        self.view_count = playlist_videos['items'][0]['statistics']['viewCount']
-        self.like_count = playlist_videos['items'][0]['statistics']['likeCount']
-        self.id_playlist = playlist_videos['items'][0]['snippet']['channelId']
+        self.playlist_id = playlist_id

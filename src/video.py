@@ -16,7 +16,7 @@ class Video():
                                                  id=self._video_id
                                                  ).execute()
             self.id = video_response['items'][0]['id']
-        except:
+        except IndexError:
             self.id = video_id
             self.title = None
             self.url = None

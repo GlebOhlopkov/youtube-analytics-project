@@ -10,15 +10,24 @@ class Video():
     def __init__(self, video_id: str) -> None:
         """Экземпляр инициализируется id канала. Дальше все данные будут подтягиваться по API."""
         self._video_id = video_id
-        video = self.get_service()
-        video_response = video.videos().list(part='snippet,statistics,contentDetails,topicDetails',
-                                               id=self._video_id
-                                               ).execute()
-        self.id = video_response['items'][0]['id']
-        self.title = video_response['items'][0]['snippet']['title']
-        self.url = 'https://www.youtu.be/' + video_id
-        self.view_count = video_response['items'][0]['statistics']['viewCount']
-        self.like_count = video_response['items'][0]['statistics']['likeCount']
+        try:
+            video = self.get_service()
+            video_response = video.videos().list(part='snippet,statistics,contentDetails,topicDetails',
+                                                 id=self._video_id
+                                                 ).execute()
+            self.id = video_response['items'][0]['id']
+        except:
+            self.id = video_id
+            self.title = None
+            self.url = None
+            self.view_count = None
+            self.like_count = None
+        else:
+            self.id = video_response['items'][0]['id']
+            self.title = video_response['items'][0]['snippet']['title']
+            self.url = 'https://www.youtu.be/' + video_id
+            self.view_count = video_response['items'][0]['statistics']['viewCount']
+            self.like_count = video_response['items'][0]['statistics']['likeCount']
 
     def __str__(self):
         return self.title
@@ -27,8 +36,8 @@ class Video():
         """Выводит в консоль информацию о канале."""
         video = self.get_service()
         video_response = video.videos().list(part='snippet,statistics,contentDetails,topicDetails',
-                                               id=self._video_id
-                                               ).execute()
+                                             id=self._video_id
+                                             ).execute()
         return print(json.dumps(video_response, indent=2, ensure_ascii=False))
 
     @classmethod
